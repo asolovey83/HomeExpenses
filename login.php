@@ -1,5 +1,6 @@
 <?php
 require_once('header.php');
+require('bootstrap.php');
 session_start();
 
 if (isset($_SESSION['login']) && isset($_SESSION['password'])) { unset($_SESSION['login']); unset($_SESSION['password']); }
@@ -33,9 +34,7 @@ if(isset($_POST['logininput']) || isset($_POST['loginoutput']) )
 <html>
 
 <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>Log In Page</title>
 </head>
 
 <body class="bg-info">
@@ -53,19 +52,6 @@ if(isset($_POST['logininput']) || isset($_POST['loginoutput']) )
             <input class="btn btn-primary" type="submit" id="loginoutput" value="Login to Output Data" name="loginoutput">
         </form>
         </div>
-    </div>
-    
-    
-    <?php
-    /**foreach ($_COOKIE as $key => $value)
-    {
-        echo $key.' is '.$value."<br>\n";
-    }
-    
-    foreach ($_SESSION as $key => $value)
-    {
-        echo $key.' is '.$value."<br>\n";
-    }*/
-    ?>
+    </div>  
 </body>
 <html>

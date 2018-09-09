@@ -3,5 +3,4 @@ User: andrew;
 Password: password;
 
 TO DO Next:
-Buttons instead of links for delete and cancel - ???
-Check how to save table values on dataoutput page
+Refactoring - refinement of echo`s, deleting of commented code and unnecessary UI logs
