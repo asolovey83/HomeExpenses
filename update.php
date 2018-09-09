@@ -1,39 +1,40 @@
 <?php
-require_once('pdo.php');
 session_start();
+require_once('pdo.php');
+require('bootstrap.php');
 require_once('header.php');
-
+$origdesc = NULL;
+$desc = NULL;
 $userid = $_GET['id'];
 $sql = "SELECT id, date, category, description, sum FROM main WHERE id = :user" ;
 $stmt = $pdo->prepare($sql);
 $stmt->execute(array(":user" => $userid));
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
-print_r($row);
-
+$origdesc = $row['description'];
 
 if (isset($_POST['submit']))
 {
+ if ($_POST['expdesc'] == NULL) { $desc = $origdesc; } else if ($_POST['expdesc'] != NULL) {$desc = $_POST['expdesc'];}
+    
     $sqlupd = "UPDATE main SET date = :w, category = :x, description = :y, sum =:z WHERE id = :user";
     $stmt = $pdo->prepare($sqlupd);
     $stmt->execute(array(
         ":user" => $userid,
         ":w" => $_POST['expdate'],
         ":x" => $_POST['exptype'],
-        ":y" => $_POST['expdesc'],
+        ":y" => $desc,
         ":z" => $_POST['expsum']
     ));
     
     echo ('The expenses are edited');                
-    header( "refresh:3; url=dataoutput.php");
+    header( "refresh:2; url=dataoutput.php");
 }
 
 ?>
 
 <html>
     <head>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <title>Update Expenses</title>
     </head>
     
     <body class="bg-info">

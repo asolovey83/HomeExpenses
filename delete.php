@@ -8,9 +8,7 @@ require('pdo.php');
     $stmt = $pdo->prepare($sql);
     $stmt->execute(array(":user" => $userid));
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    print_r($row);
-    print_r($userid);
-
+    
     if (isset($_POST['delete']))
     {
         $sql = "DELETE FROM main WHERE id = :xyz";

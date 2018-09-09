@@ -2,10 +2,10 @@
 session_start();
 require_once('header.php');
 require('pdo.php');
+require('bootstrap.php');
 $sum = NULL;
 $sqlshow = NULL;
 $output = 0;
-
 
 if (isset($_POST['dateselect']))
 {
@@ -13,32 +13,29 @@ if (isset($_POST['dateselect']))
     {
         $startdate = $_POST['startdate'];
         $enddate = $_POST['enddate'];
-        $exptype = $_POST['exptype'];       
-        
+        $exptype = $_POST['exptype']; 
+        $_SESSION['startdate'] = $startdate;
+        $_SESSION['enddate'] = $enddate;
+        $_SESSION['exptypeout'] = $exptype;
+            
         if ($enddate >= $startdate)
         {   
             if ($exptype == 'default'){
             
             $sql = "SELECT SUM(sum) FROM main WHERE date >= '$startdate' and date <= '$enddate'";
             $sqlshow = "SELECT id, date, category, description, sum FROM main WHERE date >= '$startdate' and date <= '$enddate'";
-            print_r($sql);
             $stmt = $pdo->query($sql);
             $stmt->execute();
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);          
-            
-            echo('<br><br>');
-            print_r($row);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);            
             $sum = $row['SUM(sum)']; 
             } 
             else {
                 $sql = "SELECT SUM(sum) FROM main WHERE date >= '$startdate' and date <= '$enddate' and category = '$exptype'";
                 $sqlshow = "SELECT id, date, category, description, sum FROM main WHERE date >= '$startdate' and date <= '$enddate' and category = '$exptype'";
-                print_r($sql);
                 $stmt = $pdo->query($sql);
                 $stmt->execute();
                 $row = $stmt->fetch(PDO::FETCH_ASSOC); 
                 echo('<br><br>');
-                print_r($row);
                 $sum = $row['SUM(sum)'];
             }                        
                         
@@ -64,18 +61,18 @@ if (isset($_POST['delete']) && isset($_POST['id']))
 
 
 <html>
-
-<head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-</head>
+    
+    <head>
+        <title>Expences Output</title>
+    </head> 
 
 <body class="bg-info">
-    <?php
-        
-        print_r($_SESSION);
-    
+    <?php       
+            
+        $startdate = isset($_SESSION['startdate']) ? $_SESSION['startdate']:NULL;
+        $enddate = isset($_SESSION['enddate']) ? $_SESSION['enddate']:NULL;
+        $exptype = isset($_SESSION['exptypeout']) ? $_SESSION['exptypeout']: "default";
+            
         //Success flash message using $_SESSION variable    
         if (isset($_SESSION['success'])) 
         {
@@ -97,24 +94,63 @@ if (isset($_POST['delete']) && isset($_POST['id']))
                 echo('<div class="col-xs-12 col-sm-6">');
                 echo ('<form id="queryfm" method="post">');
                 echo('<p><label>Please, select the date range:</label></p>');
-                echo('<p><input class="form-group" type="date" name="startdate" id="startdate">          ');
-                echo('<input class="form-group" type="date" name="enddate" id="enddate"></p>');               
-                echo('<p><label for="exptype">Please, select the expenses type:</label>');
-                echo('<select class="form-control" name="exptype">');
-                echo('<option value="default">--Select the expences type--</option>');
-                echo('<option value="transport">Transport</option>');
-                echo('<option value="foods">Foods</option>');
-                echo('<option value="meals">Meals</option>');
-                echo('<option value="fun">Fun</option>');
-                echo('<option value="health">Health</option>');
-                echo('<option value="clothing">Clothing</option>');
-                echo('<option value="home">Home</option>');
-                echo('<option value="services">Services</option>');
-                echo('<option value="toys">Toys</option>');
-                echo('<option value="study">Study</option>');
-                echo('<option value="telecom">Telecom</option>');
-                echo('<option value="other">Other</option>');
-                echo('</select></p>');  
+                echo('<p><input class="form-group" type="date" name="startdate" id="startdate" value="');
+                echo(htmlentities($startdate));
+                echo('">');
+                echo('<input class="form-group" type="date" name="enddate" id="enddate" value="');
+                echo(htmlentities($enddate));
+                echo('"></p>');                           
+            
+                echo ('<p><label for="exptype">Choose expenses type:</label>');
+                echo ('<select class="form-control" name="exptype">');
+                
+                echo ('<option value="default"');
+                if ($exptype == "default") { echo ('selected');}
+                echo('>--- Select the value ---</option>');
+            
+                echo ('<option value="transport"');
+                if ($exptype == "transport") { echo ('selected');}
+                echo('>Transport</option>');
+                
+                echo ('<option value="foods"');
+                if ($exptype == "foods") { echo ('selected');}
+                echo('>Foods</option>');
+                
+                echo ('<option value="fun"');
+                if ($exptype == "fun") { echo ('selected');}
+                echo('>Fun</option>'); 
+                
+                echo ('<option value="health"');
+                if ($exptype == "health") { echo ('selected');}
+                echo('>Health</option>'); 
+                
+                echo ('<option value="clothing"');
+                if ($exptype == "clothing") { echo ('selected');}
+                echo('>Clothing</option>');
+                
+                echo ('<option value="home"');
+                if ($exptype == "home") { echo ('selected');}
+                echo('>Home</option>');
+                
+                echo ('<option value="toys"');
+                if ($exptype == "toys") { echo ('selected');}
+                echo('>Toys</option>');
+                
+                echo ('<option value="study"');
+                if ($exptype == "study") { echo ('selected');}
+                echo('>Study</option>');
+                
+                echo ('<option value="telecom"');
+                if ($exptype == "telecom") { echo ('selected');}
+                echo('>Telecom</option>');
+                
+                echo ('<option value="other"');
+                if ($exptype == "other") { echo ('selected');}
+                echo('>Other</option>');
+                
+                echo ('</select></p>');            
+            
+            
                 echo('<input class="btn btn-primary" type="submit" name="dateselect" id="dateselect" value="Select">');
                 echo('</p>');
                 echo('</form>');        
@@ -124,18 +160,17 @@ if (isset($_POST['delete']) && isset($_POST['id']))
                 echo('</h3>'); 
                 echo('</div>');                
                 echo('</div>');
-            }      
-            
-     
-        
-                    
+            }                      
 
         if ($sqlshow != NULL)
         {
             $stmt = $pdo->query($sqlshow);
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-             echo('<div class="container">');             
-             echo ("<h2>Detailed expenses list</h2>");
+             echo('<div class="container">');     
+             echo('<div class="row">');
+             echo ('<h2 onclick="showExp()">Show/hide detailed expenses list</h2>');
+             echo ('</div>');
+             echo('<div class="row" id="detExp" style="display:none;">');
              echo ('<table class="table table-bordered">');
              echo('<thead class="thead-dark">');
              echo("<tr><th>Date</th><th>Category</th><th>Description</th><th>Sum, UAH</th><th>Delete/Update</th></tr>");
@@ -150,11 +185,7 @@ if (isset($_POST['delete']) && isset($_POST['id']))
              echo(htmlentities($row['description']));
              echo("</td><td>");
              echo(htmlentities($row['sum']));
-             echo("</td><td>");
-             //echo('<form method="post"><input type="hidden" ');
-             //echo('name="id" value="'.$row['id'].'">'."\n");
-             //echo('<input type="submit" value="Del" name="delete">');
-             //echo("\n</form>\n"); 
+             echo("</td><td>");             
              echo('<a href="delete.php?id='. $row['id'].'">Delete</a>');
              echo(' / ');
              echo('<a href="update.php?id='. $row['id'].'">Update</a>');
@@ -163,10 +194,22 @@ if (isset($_POST['delete']) && isset($_POST['id']))
              echo('</tbody>');
              echo('</table>');
              echo('</div>');
+             echo('</div>');
             
         }
 
    ?>
+    
+<script type="text/javascript">
+    function showExp() {
+        var x = document.getElementById("detExp");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
+</script>
 
 
 </body>
