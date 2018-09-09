@@ -1,5 +1,6 @@
 <?php
 require_once('pdo.php');
+require('bootstrap.php');
 date_default_timezone_set('Europe/Kiev');
 
 
@@ -22,7 +23,7 @@ if (isset($_POST['submit']))
                 $expdesc = $_POST['expdesc'];
                 $_SESSION['expsum'] = $expsum;        
                 $_SESSION['expdesc'] = $expdesc;
-                $_SESSION['exptype'] = $exptype;
+                $_SESSION['exptypein'] = $exptype;
                 $_SESSION['expdate'] = $expdate;
               
                 
@@ -59,11 +60,8 @@ if (isset($_POST['submit']))
 
 <html>
     <head>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    </head>
-    <title>Expences Input</title>
+        <title>Expences Input</title>
+    </head>    
     <body class="bg-info">
         <div class="container">
             <div class="col-xs-12 col-sm-6">
@@ -74,7 +72,7 @@ if (isset($_POST['submit']))
         
         <?php
         $expdate = isset($_SESSION['expdate']) ? $_SESSION['expdate']:NULL;
-        $exptype = isset($_SESSION['exptype']) ? $_SESSION['exptype']: "transport";
+        $exptype = isset($_SESSION['exptypein']) ? $_SESSION['exptypein']: "transport";
         $expdesc = isset($_SESSION['expdesc']) ? $_SESSION['expdesc']: "";
         $expsum = isset($_SESSION['expsum']) ? $_SESSION['expsum']: "";      
         ?>
@@ -83,82 +81,85 @@ if (isset($_POST['submit']))
         <?php 
             if (!isset($_SESSION['login'])) 
             {
-                echo('<div class="container">');
-                echo('<div class="col-xs-12 col-sm-6">');
-                echo ('<h2>Please, <a href="login.php"> Log In </a> to input you expenses!</h2>'); 
-                echo('</div');
-                echo('</div');
+         ?>
+                <div class="container">
+                <div class="col-xs-12 col-sm-6">
+                <h2>Please, <a href="login.php"> Log In </a> to input you expenses!</h2>
+                </div>
+                </div>                                
+
+        <?php 
             } else
-            {   echo('<div class="container">');
-                echo('<div class="col-xs-12 col-sm-6">');
-                echo ('<h2>Please, input you expenses or <a href="logout.php">Log out.</a></h2>');                
-                echo ('<form id="expform" method="post">');
-                echo ('<p><label for="expdate">Enter the date:</label>');
-                echo ('<input class="form-control" type="date" name="expdate" id="expdate" value= "');
-                echo (htmlentities($expdate)); 
-                echo ('" /></p>');
+                {   echo('<div class="container">');
+                    echo('<div class="col-xs-12 col-sm-6">');
+                    echo ('<h2>Please, input you expenses or <a href="logout.php">Log out.</a></h2>');                
+                    echo ('<form id="expform" method="post">');
+                    echo ('<p><label for="expdate">Enter the date:</label>');
+                    echo ('<input class="form-control" type="date" name="expdate" id="expdate" value= "');
+                    echo (htmlentities($expdate)); 
+                    echo ('" /></p>');
                 
-                echo ('<p><label for="exptype">Choose expenses type:</label>');
-                echo ('<select class="form-control" name="exptype">');
+                    echo ('<p><label for="exptype">Choose expenses type:</label>');
+                    echo ('<select class="form-control" name="exptype">');
                 
                 
-                echo ('<option value="transport"');
-                if ($exptype == "transport") { echo ('selected');}
-                echo('>Transport</option>');
-                
-                echo ('<option value="foods"');
-                if ($exptype == "foods") { echo ('selected');}
-                echo('>Foods</option>');
-                
-                echo ('<option value="fun"');
-                if ($exptype == "fun") { echo ('selected');}
-                echo('>Fun</option>'); 
-                
-                echo ('<option value="health"');
-                if ($exptype == "health") { echo ('selected');}
-                echo('>Health</option>'); 
-                
-                echo ('<option value="clothing"');
-                if ($exptype == "clothing") { echo ('selected');}
-                echo('>Clothing</option>');
-                
-                echo ('<option value="home"');
-                if ($exptype == "home") { echo ('selected');}
-                echo('>Home</option>');
-                
-                echo ('<option value="toys"');
-                if ($exptype == "toys") { echo ('selected');}
-                echo('>Toys</option>');
-                
-                echo ('<option value="study"');
-                if ($exptype == "study") { echo ('selected');}
-                echo('>Study</option>');
-                
-                echo ('<option value="telecom"');
-                if ($exptype == "telecom") { echo ('selected');}
-                echo('>Telecom</option>');
-                
-                echo ('<option value="other"');
-                if ($exptype == "other") { echo ('selected');}
-                echo('>Other</option>');
-                
-                echo ('</select></p>');
-                
-                echo ('<p><label for="expdesc">Give the expences description:</label></p>');
-                
-                echo ('<p><textarea class="form-control" name="expdesc" id="expdesc" rows="10" cols="30" placeholder= "');
-                echo (htmlentities($expdesc));
-                echo ('"></textarea></p>');
-                
-                echo ('<p><label for="expsum">Enter the sum, UAH: </label>');
-                echo (' <input type="text" name="expsum" id="expsum" value="');
-                echo (htmlentities($expsum));
-                echo ('"/></p>');
-                echo ('<p><input class="btn btn-primary" type="submit" id="submit" name="submit" value="Записать"></p>');
-                    
-                echo ('</form>');
-                echo('</div>');                
-                echo('</div>');
+                    echo ('<option value="transport"');
+                    if ($exptype == "transport") { echo ('selected');}
+                    echo('>Transport</option>');
+
+                    echo ('<option value="foods"');
+                    if ($exptype == "foods") { echo ('selected');}
+                    echo('>Foods</option>');
+
+                    echo ('<option value="fun"');
+                    if ($exptype == "fun") { echo ('selected');}
+                    echo('>Fun</option>'); 
+
+                    echo ('<option value="health"');
+                    if ($exptype == "health") { echo ('selected');}
+                    echo('>Health</option>'); 
+
+                    echo ('<option value="clothing"');
+                    if ($exptype == "clothing") { echo ('selected');}
+                    echo('>Clothing</option>');
+
+                    echo ('<option value="home"');
+                    if ($exptype == "home") { echo ('selected');}
+                    echo('>Home</option>');
+
+                    echo ('<option value="toys"');
+                    if ($exptype == "toys") { echo ('selected');}
+                    echo('>Toys</option>');
+
+                    echo ('<option value="study"');
+                    if ($exptype == "study") { echo ('selected');}
+                    echo('>Study</option>');
+
+                    echo ('<option value="telecom"');
+                    if ($exptype == "telecom") { echo ('selected');}
+                    echo('>Telecom</option>');
+
+                    echo ('<option value="other"');
+                    if ($exptype == "other") { echo ('selected');}
+                    echo('>Other</option>');
+
+                    echo ('</select></p>');
+
+                    echo ('<p><label for="expdesc">Give the expences description:</label></p>');
+
+                    echo ('<p><textarea class="form-control" name="expdesc" id="expdesc" rows="10" cols="30" placeholder= "');
+                    echo (htmlentities($expdesc));
+                    echo ('"></textarea></p>');
+
+                    echo ('<p><label for="expsum">Enter the sum, UAH: </label>');
+                    echo (' <input type="text" name="expsum" id="expsum" value="');
+                    echo (htmlentities($expsum));
+                    echo ('"/></p>');
+                    echo ('<p><input class="btn btn-primary" type="submit" id="submit" name="submit" value="Записать"></p>');
+
+                    echo ('</form>');
+                    echo('</div>');                
+                    echo('</div>');
             }            
             
         ?>  
