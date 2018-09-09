@@ -24,24 +24,18 @@ if (isset($_POST['dateselect']))
             
             $sql = "SELECT SUM(sum) FROM main WHERE date >= '$startdate' and date <= '$enddate'";
             $sqlshow = "SELECT id, date, category, description, sum FROM main WHERE date >= '$startdate' and date <= '$enddate'";
-            print_r($sql);
             $stmt = $pdo->query($sql);
             $stmt->execute();
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);          
-            
-            echo('<br><br>');
-            print_r($row);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);            
             $sum = $row['SUM(sum)']; 
             } 
             else {
                 $sql = "SELECT SUM(sum) FROM main WHERE date >= '$startdate' and date <= '$enddate' and category = '$exptype'";
                 $sqlshow = "SELECT id, date, category, description, sum FROM main WHERE date >= '$startdate' and date <= '$enddate' and category = '$exptype'";
-                print_r($sql);
                 $stmt = $pdo->query($sql);
                 $stmt->execute();
                 $row = $stmt->fetch(PDO::FETCH_ASSOC); 
                 echo('<br><br>');
-                print_r($row);
                 $sum = $row['SUM(sum)'];
             }                        
                         
@@ -73,13 +67,11 @@ if (isset($_POST['delete']) && isset($_POST['id']))
     </head> 
 
 <body class="bg-info">
-    <?php
-        
-        print_r($_SESSION);       
+    <?php       
             
         $startdate = isset($_SESSION['startdate']) ? $_SESSION['startdate']:NULL;
         $enddate = isset($_SESSION['enddate']) ? $_SESSION['enddate']:NULL;
-        $exptype = isset($_SESSION['exptypeout']) ? $_SESSION['exptypeout']: "transport";
+        $exptype = isset($_SESSION['exptypeout']) ? $_SESSION['exptypeout']: "default";
             
         //Success flash message using $_SESSION variable    
         if (isset($_SESSION['success'])) 
@@ -112,6 +104,10 @@ if (isset($_POST['delete']) && isset($_POST['id']))
                 echo ('<p><label for="exptype">Choose expenses type:</label>');
                 echo ('<select class="form-control" name="exptype">');
                 
+                echo ('<option value="default"');
+                if ($exptype == "default") { echo ('selected');}
+                echo('>--- Select the value ---</option>');
+            
                 echo ('<option value="transport"');
                 if ($exptype == "transport") { echo ('selected');}
                 echo('>Transport</option>');
@@ -164,11 +160,7 @@ if (isset($_POST['delete']) && isset($_POST['id']))
                 echo('</h3>'); 
                 echo('</div>');                
                 echo('</div>');
-            }      
-            
-     
-        
-                    
+            }                      
 
         if ($sqlshow != NULL)
         {
@@ -193,11 +185,7 @@ if (isset($_POST['delete']) && isset($_POST['id']))
              echo(htmlentities($row['description']));
              echo("</td><td>");
              echo(htmlentities($row['sum']));
-             echo("</td><td>");
-             //echo('<form method="post"><input type="hidden" ');
-             //echo('name="id" value="'.$row['id'].'">'."\n");
-             //echo('<input type="submit" value="Del" name="delete">');
-             //echo("\n</form>\n"); 
+             echo("</td><td>");             
              echo('<a href="delete.php?id='. $row['id'].'">Delete</a>');
              echo(' / ');
              echo('<a href="update.php?id='. $row['id'].'">Update</a>');
