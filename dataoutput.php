@@ -3,9 +3,29 @@ session_start();
 require_once('header.php');
 require('pdo.php');
 require('bootstrap.php');
-$sum = NULL;
-$sqlshow = NULL;
+$limit = 5;
+$sum = isset($_SESSION['sum']) ? $_SESSION['sum'] : NULL;
+$sqlshow = isset($_SESSION['sqlshow']) ? $_SESSION['sqlshow'] : NULL;
+$total = isset($_SESSION['total']) ? $_SESSION['total'] : 0;
+$total_pages = ceil($total/$limit);
 $output = 0;
+$limit = 5;
+
+print_r($_SESSION);
+
+if (!isset($_GET['page']))
+{
+    $page = 1;
+} else
+{
+    $page = $_GET['page'];
+}
+
+$starting_limit = ($page-1)*$limit;
+echo('<br> Starting limit '. $starting_limit. '<br>');
+echo('Limit '. $limit . '<br>');
+echo('Total ' . $total . '<br>');
+echo('Total pages' . $total_pages);
 
 if (isset($_POST['dateselect']))
 {
@@ -23,22 +43,48 @@ if (isset($_POST['dateselect']))
             if ($exptype == 'default'){
             
             $sql = "SELECT SUM(sum) FROM main WHERE date >= '$startdate' and date <= '$enddate'";
-            $sqlshow = "SELECT id, date, category, description, sum FROM main WHERE date >= '$startdate' and date <= '$enddate'";
+            $sqlshow = "SELECT id, date, category, description, sum FROM main WHERE date >= '$startdate' and date <= '$enddate' LIMIT :start, :limit";
+            $_SESSION['sqlshow'] = $sqlshow;
             $stmt = $pdo->query($sql);
-            $stmt->execute();
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);            
+            $stmt->execute();                
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $sum = $row['SUM(sum)']; 
+            $_SESSION['sum'] = $sum;
+                
+            $sqlsum = "SELECT * FROM main WHERE date >= '$startdate' and date <= '$enddate' and category = '$exptype'";
+            $stmtsum = $pdo->prepare($sqlsum);
+            $stmtsum->execute();
+            $total = $stmtsum->rowCount();            
+            $_SESSION['total'] = $total;
+            echo('Total =' . $total);              
+                          
+                
             } 
             else {
                 $sql = "SELECT SUM(sum) FROM main WHERE date >= '$startdate' and date <= '$enddate' and category = '$exptype'";
-                $sqlshow = "SELECT id, date, category, description, sum FROM main WHERE date >= '$startdate' and date <= '$enddate' and category = '$exptype'";
+                $sqlshow = "SELECT id, date, category, description, sum FROM main WHERE date >= '$startdate' and date <= '$enddate' and category = '$exptype' LIMIT :start, :limit";
+                $_SESSION['sqlshow'] = $sqlshow;
                 $stmt = $pdo->query($sql);
                 $stmt->execute();
-                $row = $stmt->fetch(PDO::FETCH_ASSOC); 
-                echo('<br><br>');
-                $sum = $row['SUM(sum)'];
-            }                        
-                        
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);         
+                $sum = $row['SUM(sum)']; 
+                $_SESSION['sum'] = $sum;                
+                
+                $sqlsum = "SELECT * FROM main WHERE date >= '$startdate' and date <= '$enddate' and category = '$exptype'";
+                $stmtsum = $pdo->prepare($sqlsum);
+                $stmtsum->execute();
+                $total = $stmtsum->rowCount();                
+                $_SESSION['total'] = $total;
+                echo('Total =' . $total);
+                
+                
+            }            
+              
+            if (isset($_GET['page']))
+            {
+                header('Location:dataoutput.php');
+            }
+                            
         } else {
             
             echo('Incorrect date range');
@@ -164,8 +210,10 @@ if (isset($_POST['delete']) && isset($_POST['id']))
 
         if ($sqlshow != NULL)
         {
-            $stmt = $pdo->query($sqlshow);
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $rows = $pdo->prepare($sqlshow);
+            $rows->bindValue(':start', $starting_limit, PDO::PARAM_INT);
+            $rows->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $rows->execute();
              echo('<div class="container">');     
              echo('<div class="row">');
              echo ('<h2 onclick="showExp()">Show/hide detailed expenses list</h2>');
@@ -176,7 +224,8 @@ if (isset($_POST['delete']) && isset($_POST['id']))
              echo("<tr><th>Date</th><th>Category</th><th>Description</th><th>Sum, UAH</th><th>Delete/Update</th></tr>");
              echo('</thead>');
              echo('<tbody>');
-        foreach ($rows as $row) {         
+        //foreach ($rows as $row) { 
+            while($row = $rows->fetch(PDO::FETCH_ASSOC)){
              echo("<tr><td>"); 
              echo(htmlentities($row['date']));            
              echo("</td><td>");
@@ -194,11 +243,31 @@ if (isset($_POST['delete']) && isset($_POST['id']))
              echo('</tbody>');
              echo('</table>');
              echo('</div>');
+            
+            $next = $page+1;
+            $prev = $page-1;
+    
+            if ($page == 1)
+            {
+                echo('<a href="#">'. $page .'</a>');
+                echo('<a href="?page='.$next.'">Next</a>');
+            } else if ($page == $total_pages)
+            {
+                echo('<a href="?page=' .$prev. '">Prev</a>');
+                echo('<a href="#">'. $total_pages .'</a>');                
+            } else {
+                echo ('<a href="?page='.$prev. '">Prev</a>');
+                echo ('<a href="#">'. $page .'</a>');
+                echo ('<a href="?page=' .$next. '">Next</a>');
+            }
+            
              echo('</div>');
             
+                    
         }
 
    ?>
+    
     
 <script type="text/javascript">
     function showExp() {

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require('pdo.php');
+require_once('head.php');
 
 
     $userid = $_GET['id'];

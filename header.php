@@ -24,7 +24,8 @@
     <ul class="nav navbar-nav navbar-right">
       <li class="active"><a href="login.php">Home</a></li>
       <li><a href="datainput.php">Enter the data</a></li>
-      <li><a href="dataoutput.php">View the data</a></li> 
+      <li><a href="dataoutput.php">View the data</a></li>
+      <li><a href="upload.php">Upload data</a></li>
       <li><?php 
           if (isset($_SESSION['login'])) 
               {

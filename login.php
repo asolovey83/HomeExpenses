@@ -1,7 +1,9 @@
 <?php
 require_once('header.php');
 require('bootstrap.php');
+require_once('pdo.php');
 session_start();
+$salt = "XyZzy12*_";
 
 if (isset($_SESSION['login']) && isset($_SESSION['password'])) { unset($_SESSION['login']); unset($_SESSION['password']); }
 
@@ -9,24 +11,35 @@ if(isset($_POST['logininput']) || isset($_POST['loginoutput']) )
 {
     if ($_POST['login'] !=NULL && $_POST['password'] != NULL)
     {
-        if ($_POST['login'] == 'andrew' && $_POST['password'] == 'password')
+        
+        $sql = "SELECT * FROM users";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach($rows as $row)
+        {
+        
+        if (($_POST['login'] == $row['name'] || $_POST['login'] == $row['email']) && md5($salt.$_POST['password']) == $row['password'])
         {
             $_SESSION['login'] = $_POST['login'];
             $_SESSION['password'] = $_POST['password'];
             if ($_POST['logininput'])
             {
-                header("Location: datainput.php");
+                header("Location: datainput.php?id=" . $row['user_id']);
             } else if ($_POST['loginoutput'])
             {
-                header("Location: dataoutput.php");
+                header("Location: dataoutput.php?id=" . $row['user_id']);
             }
             return;
         } else {
             echo('Incorrect login or password. Please, try again.');
         }        
-    } else {
+     } 
+    }else {
         echo('Login or password is missing');
     }
+    
 }
 ?>
 
